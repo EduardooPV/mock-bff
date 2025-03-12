@@ -5,13 +5,7 @@
     {
       "path": "mock",
       "mockData": {
-        "title": "Lorem123213"
-      }
-    },
-    {
-      "path": "mock123",
-      "mockData": {
-        "title": "Lorem123213"
+        "title": "Lorem"
       }
     }
   ]

@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
-    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 mb-4">
       <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock BFF Configuration</h1>
       
       <!-- Configuration Section -->
@@ -122,7 +122,7 @@
     </div>
 
     <!-- API Routes Section -->
-    <div class="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8" v-if="routes.length > 0">
+    <div class="min-h-screen bg-gray-100 " v-if="routes.length > 0">
       <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock API Routes</h1>
         
@@ -160,21 +160,20 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
 import { InfoIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-vue-next';
-import MockConfigModal from './components/MockConfigModa.vue';
+import MockConfigModal from '../components/MockConfigModa.vue';
+import { deleteRouteService, fetchRoutesService, saveConfigService } from '@/services/routes';
 
 const showErrorTooltip = ref(false);
 const showDelayTooltip = ref(false);
 const showRouteTooltip = ref(false);
 const showDataTooltip = ref(false);
 
-// Configuration state
 const config = reactive({
   simulateError: false,
   responseDelay: 5,
   apiRoute: 'mock',
 });
 
-// Mock data handling
 const mockDataText = ref('{\n  "title": "Lorem"\n}');
 const jsonError = ref('');
 const saveSuccess = ref(false);
@@ -192,7 +191,6 @@ const closeMockConfigModal = () => {
   isModalOpen.value = false;
 };
 
-// Validate JSON input
 const validateJson = () => {
   try {
     if (mockDataText.value.trim()) {
@@ -204,18 +202,10 @@ const validateJson = () => {
   }
 };
 
-// Save configuration to the server
 const saveConfig = async () => {
   isLoading.value = true;
   try {
-    const response = await fetch('http://localhost:3000/api/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...config,
-        mockData: JSON.parse(mockDataText.value),
-      }),
-    });
+    const response = await saveConfigService(config, mockDataText.value)
 
     if (response.ok) {
       saveSuccess.value = true;
@@ -231,26 +221,9 @@ const saveConfig = async () => {
   }
 };
 
-// Load configuration from the server
-const loadConfig = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/api/config');
-    if (response.ok) {
-      const data = await response.json();
-      config.simulateError = data.simulateError;
-      config.responseDelay = data.responseDelay;
-      config.apiRoute = data.apiRoute;
-      mockDataText.value = JSON.stringify(data.mockData, null, 2);
-    }
-  } catch (error) {
-    console.error('Error loading configuration:', error);
-  }
-};
-
-// Fetch available API routes
 const fetchRoutes = async () => {
   try {
-    const response = await fetch('http://localhost:3000/routes');
+    const response = await fetchRoutesService();
     if (response.ok) {
       routes.value = await response.json();
     }
@@ -259,22 +232,17 @@ const fetchRoutes = async () => {
   }
 };
 
-// Delete API route
 const deleteRoute = async (route) => {
-  // Remover '/api' da rota se existir e garantir que não tenha barras extras
-  const routeToDelete = route.replace('/api', '').replace(/^\/+|\/+$/g, ''); // Remove as barras extras no início e no final
+  const routeToDelete = route.replace('/api', '').replace(/^\/+|\/+$/g, ''); 
 
   try {
-    const response = await fetch(`http://localhost:3000/api/routes/${routeToDelete}`, {
-      method: 'DELETE',
-    });
+    const response = await deleteRouteService(routeToDelete)
 
     if (response.ok) {
       console.log('Route deleted successfully');
-      // Atualiza a lista de rotas no frontend após a exclusão
       routes.value = routes.value.filter(r => r !== route);
     } else {
-      const errorData = await response.text(); // Lê a resposta como texto
+      const errorData = await response.text(); 
       alert(`Error: ${errorData}`);
     }
   } catch (error) {
@@ -290,7 +258,6 @@ watch(saveSuccess, (newValue) => {
   }
 });
 
-// Load configuration and routes when mounted
 onMounted(async () => {
   await fetchRoutes();
 });

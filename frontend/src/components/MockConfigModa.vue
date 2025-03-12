@@ -1,6 +1,10 @@
 <template>
   <Teleport to="body">
-    <div v-if="isOpen" class="fixed inset-0 bg-[#00000080] flex items-center justify-center">
+    <div 
+      v-if="isOpen" 
+      class="fixed inset-0 bg-[#00000080] flex items-center justify-center" 
+      @click.self="closeModal"
+    >
       <div class="bg-white p-8 pt-6 rounded-2xl shadow-2xl max-w-lg w-full">
         <div class="flex justify-end items-center">
           <button 
@@ -31,8 +35,9 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
+import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue';
 import { X } from 'lucide-vue-next';
+import { fetchRouteDataService } from '@/services/routes';
 
 const props = defineProps({
   route: String,
@@ -45,13 +50,12 @@ const routeData = ref(null);
 
 const fetchRouteData = async (route) => {
   console.log(route)
-  if (!route) return; // Evita chamadas sem rota definida
+  if (!route) return;
 
-  // Remove qualquer prefixo "/api/" para evitar duplicação na URL final
   const cleanRoute = route.replace(/^\/?api\/?/, '');
 
   try {
-    const response = await fetch(`http://localhost:3000/api/routes/${cleanRoute}`);
+    const response = await fetchRouteDataService(cleanRoute);
     if (response.ok) {
       const data = await response.json();
       routeData.value = data
@@ -63,15 +67,20 @@ const fetchRouteData = async (route) => {
   }
 };
 
-
 watchEffect(() => {
   if (props.isOpen && props.route) {
     fetchRouteData(props.route);
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
   }
 });
-
 
 const closeModal = () => {
   emit('close');
 };
+
+onBeforeUnmount(() => {
+  document.body.style.overflow = '';
+});
 </script>
