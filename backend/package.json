@@ -1,0 +1,27 @@
+{
+  "name": "bff-mock-server",
+  "version": "1.0.0",
+  "description": "A simple BFF mock server using Express with Vue.js interface",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "bff",
+    "mock",
+    "express",
+    "api",
+    "vue"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

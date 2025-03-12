@@ -1,0 +1,12 @@
+{
+  "simulateError": false,
+  "responseDelay": 5,
+  "apiRoutes": [
+    {
+      "path": "mock",
+      "mockData": {
+        "title": "Lorem123"
+      }
+    }
+  ]
+}

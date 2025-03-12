@@ -1,0 +1,298 @@
+<template>
+  <div class="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock BFF Configuration</h1>
+      
+      <!-- Configuration Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Error Simulation -->
+        <div class="space-y-2">
+          <div class="flex items-center">
+            <label for="simulateError" class="font-medium text-gray-700 mr-2">Simulate Error</label>
+            <div class="relative inline-block" @mouseenter="showErrorTooltip = true" @mouseleave="showErrorTooltip = false">
+              <InfoIcon class="h-4 w-4 text-gray-400" />
+              <div v-if="showErrorTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+                When enabled, the API will return a 500 error instead of the mock data
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <input 
+              id="simulateError" 
+              type="checkbox" 
+              v-model="config.simulateError"
+              class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+            />
+            <label for="simulateError" class="ml-2 text-sm text-gray-600 cursor-pointer">
+              {{ config.simulateError ? 'Error will be returned' : 'Normal response will be returned' }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Response Delay -->
+        <div class="space-y-2">
+          <div class="flex items-center">
+            <label for="responseDelay" class="font-medium text-gray-700 mr-2">Response Delay (seconds)</label>
+            <div class="relative inline-block" @mouseenter="showDelayTooltip = true" @mouseleave="showDelayTooltip = false">
+              <InfoIcon class="h-4 w-4 text-gray-400" />
+              <div v-if="showDelayTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+                Simulates loading time before the response is returned (default: 0 seconds)
+              </div>
+            </div>
+          </div>
+          <input 
+            id="responseDelay" 
+            type="number" 
+            v-model.number="config.responseDelay" 
+            min="0" 
+            max="30"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+      
+      <!-- API Route Configuration -->
+      <div class="mb-6">
+        <div class="flex items-center mb-2">
+          <label for="apiRoute" class="font-medium text-gray-700 mr-2">API Route</label>
+          <div class="relative inline-block" @mouseenter="showRouteTooltip = true" @mouseleave="showRouteTooltip = false">
+            <InfoIcon class="h-4 w-4 text-gray-400" />
+            <div v-if="showRouteTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+              The endpoint path that will be used (e.g., trading/v1/products)
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="text-gray-500 mr-1">/api/</span>
+          <input 
+            id="apiRoute" 
+            type="text" 
+            v-model="config.apiRoute" 
+            placeholder="mock"
+            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+      
+      <!-- Mock Data Configuration -->
+      <div class="mb-6">
+        <div class="flex items-center mb-2">
+          <label for="mockData" class="font-medium text-gray-700 mr-2">Mock Data (JSON)</label>
+          <div class="relative inline-block" @mouseenter="showDataTooltip = true" @mouseleave="showDataTooltip = false">
+            <InfoIcon class="h-4 w-4 text-gray-400" />
+            <div v-if="showDataTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+              The JSON data that will be returned by the mock API
+            </div>
+          </div>
+        </div>
+        <textarea 
+          id="mockData" 
+          v-model="mockDataText" 
+          rows="10"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+          @input="validateJson"
+        ></textarea>
+        <p v-if="jsonError" class="mt-1 text-sm text-red-600">{{ jsonError }}</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-between items-center">
+        <div>
+          <p v-if="saveSuccess" class="text-sm text-green-600 mb-2">Configuration saved successfully!</p>
+          <p class="text-sm text-gray-600">
+            Your mock API will be available at: 
+            <span class="font-mono bg-gray-100 px-1 py-0.5 rounded">
+              http://localhost:3000/api/{{ config.apiRoute }}
+            </span>
+          </p>
+        </div>
+        <button 
+          @click="saveConfig" 
+          class="px-4 py-2 bg-blue-600 flex items-center justify-center text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer w-[180px] h-[40px]"
+          :disabled="isLoading || !!jsonError"
+        >
+          <span v-if="isLoading" class="flex items-center justify-center animate-spin h-5 w-5">
+            <LoaderCircleIcon />
+          </span>
+          <span v-else>
+            Save Configuration
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- API Routes Section -->
+    <div class="min-h-screen bg-gray-100 p-4 sm:p-6 md:p-8" v-if="routes.length > 0">
+      <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock API Routes</h1>
+        
+        <div v-if="routes.length > 0" class="space-y-4">
+          <h2 class="text-xl font-semibold text-gray-800">Available API Routes</h2>
+          <ul>
+            <li v-for="route in routes" :key="route" class="flex justify-between items-center gap-2 text-gray-600">
+              <button class="font-mono text-blue-500 hover:bg-gray-200 p-2 rounded-sm cursor-pointer w-full text-start" @click="openMockConfigModal(route)">{{ route }}</button>
+            
+              <button 
+                @click="deleteRoute(route)"
+                class="flex items-center justify-center p-2 rounded-full transition cursor-pointer hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Delete route"
+              >
+                <Trash2Icon color="#FF6961" size="15"/>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div v-else>
+          <p class="text-sm text-gray-600">Loading routes...</p>
+        </div>
+      </div>
+    </div>
+
+    <MockConfigModal 
+      :isOpen="isModalOpen"
+      :route="selectedRoute"
+      @close="closeMockConfigModal"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, watch } from 'vue';
+import { InfoIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-vue-next';
+import MockConfigModal from './components/MockConfigModa.vue';
+
+const showErrorTooltip = ref(false);
+const showDelayTooltip = ref(false);
+const showRouteTooltip = ref(false);
+const showDataTooltip = ref(false);
+
+// Configuration state
+const config = reactive({
+  simulateError: false,
+  responseDelay: 5,
+  apiRoute: 'mock',
+});
+
+// Mock data handling
+const mockDataText = ref('{\n  "title": "Lorem"\n}');
+const jsonError = ref('');
+const saveSuccess = ref(false);
+const routes = ref([]);
+const isLoading = ref(false);
+const isModalOpen = ref(false);
+const selectedRoute = ref('');
+
+const openMockConfigModal = (route) => {
+  selectedRoute.value = route;
+  isModalOpen.value = true;
+};
+
+const closeMockConfigModal = () => {
+  isModalOpen.value = false;
+};
+
+// Validate JSON input
+const validateJson = () => {
+  try {
+    if (mockDataText.value.trim()) {
+      JSON.parse(mockDataText.value);
+      jsonError.value = '';
+    }
+  } catch (e) {
+    jsonError.value = `Invalid JSON: ${e.message}`;
+  }
+};
+
+// Save configuration to the server
+const saveConfig = async () => {
+  isLoading.value = true;
+  try {
+    const response = await fetch('http://localhost:3000/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...config,
+        mockData: JSON.parse(mockDataText.value),
+      }),
+    });
+
+    if (response.ok) {
+      saveSuccess.value = true;
+      setTimeout(() => { saveSuccess.value = false; }, 3000);
+    } else {
+      throw new Error('Failed to save configuration');
+    }
+  } catch (error) {
+    console.error('Error saving configuration:', error);
+    alert('Failed to save configuration. Please check the console for details.');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Load configuration from the server
+const loadConfig = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/api/config');
+    if (response.ok) {
+      const data = await response.json();
+      config.simulateError = data.simulateError;
+      config.responseDelay = data.responseDelay;
+      config.apiRoute = data.apiRoute;
+      mockDataText.value = JSON.stringify(data.mockData, null, 2);
+    }
+  } catch (error) {
+    console.error('Error loading configuration:', error);
+  }
+};
+
+// Fetch available API routes
+const fetchRoutes = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/routes');
+    if (response.ok) {
+      routes.value = await response.json();
+    }
+  } catch (error) {
+    console.error('Error fetching routes:', error);
+  }
+};
+
+// Delete API route
+const deleteRoute = async (route) => {
+  // Remover '/api' da rota se existir e garantir que não tenha barras extras
+  const routeToDelete = route.replace('/api', '').replace(/^\/+|\/+$/g, ''); // Remove as barras extras no início e no final
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/routes/${routeToDelete}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      console.log('Route deleted successfully');
+      // Atualiza a lista de rotas no frontend após a exclusão
+      routes.value = routes.value.filter(r => r !== route);
+    } else {
+      const errorData = await response.text(); // Lê a resposta como texto
+      alert(`Error: ${errorData}`);
+    }
+  } catch (error) {
+    console.error('Error deleting route:', error);
+    alert('Failed to delete route');
+  }
+};
+
+watch(saveSuccess, (newValue) => {
+  if (newValue) {
+    fetchRoutes();
+    saveSuccess.value = false; 
+  }
+});
+
+// Load configuration and routes when mounted
+onMounted(async () => {
+  await loadConfig();
+  await fetchRoutes();
+});
+</script>
