@@ -292,7 +292,6 @@ watch(saveSuccess, (newValue) => {
 
 // Load configuration and routes when mounted
 onMounted(async () => {
-  await loadConfig();
   await fetchRoutes();
 });
 </script>
