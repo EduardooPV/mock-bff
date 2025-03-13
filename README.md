@@ -22,9 +22,11 @@ O projeto é composto por duas partes principais:
 https://github.com/user-attachments/assets/37047987-1cef-4f87-ba17-1b826f78d5a2
 
 ### Simulando request com sucesso
+
 ![Captura de tela 2025-03-12 210631](https://github.com/user-attachments/assets/5468b9b8-2099-441a-b9b5-517a79e8f94e)
 
 ### Simulando request com erro
+
 ![Captura de tela 2025-03-12 210647](https://github.com/user-attachments/assets/da7c433c-22fa-468e-a9ba-610e2ad8b707)
 
 ## Estrutura do Projeto
@@ -36,10 +38,12 @@ O projeto é dividido em duas partes principais:
 
 ## Instalação das Dependências
 
-Para instalar as dependências de todos os pacotes do projeto (raiz, backend e frontend), utilize o seguinte comando:
+Para instalar as dependências de todos os pacotes do projeto (raiz, backend e frontend), utilize os seguintes comandos:
 
 ```bash
-npm run install
+npm install
+npm run install:frontend
+npm run install:backend
 ```
 
 Este comando irá executar o seguinte:
