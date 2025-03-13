@@ -85,13 +85,7 @@
             </div>
           </div>
         </div>
-        <textarea 
-          id="mockData" 
-          v-model="mockDataText" 
-          rows="10"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-          @input="validateJson"
-        ></textarea>
+        <textarea v-model="mockDataText" id="editor"></textarea>
         <p v-if="jsonError" class="mt-1 text-sm text-red-600">{{ jsonError }}</p>
       </div>
 
@@ -162,6 +156,9 @@ import { ref, reactive, onMounted, watch } from 'vue';
 import { InfoIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-vue-next';
 import MockConfigModal from '../components/MockConfigModa.vue';
 import { deleteRouteService, fetchRoutesService, saveConfigService } from '@/services/routes';
+import * as CodeMirror from 'codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/dracula.css';
 
 const showErrorTooltip = ref(false);
 const showDelayTooltip = ref(false);
@@ -257,6 +254,24 @@ watch(saveSuccess, (newValue) => {
     saveSuccess.value = false; 
   }
 });
+
+onMounted(() => {
+  const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+    lineNumbers: true,
+    autoCloseBrackets: true,
+    indentUnit: 2,
+    tabSize: 2,
+    theme: 'dracula',
+    mode: 'application/json',
+    autocorrect: true,
+    spellcheck: true,
+  });
+
+  editor.on('change', (instance) => {
+    mockDataText.value = instance.getValue();
+    validateJson();
+  });
+})
 
 onMounted(async () => {
   await fetchRoutes();

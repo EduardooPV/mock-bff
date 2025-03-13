@@ -5,7 +5,7 @@
       class="fixed inset-0 bg-[#00000080] flex items-center justify-center" 
       @click.self="closeModal"
     >
-      <div class="bg-white p-8 pt-6 rounded-2xl shadow-2xl max-w-lg w-full">
+      <div class="bg-white p-8 pt-6 rounded-2xl shadow-2xl max-w-2/3 w-full">
         <div class="flex justify-end items-center">
           <button 
             @click="closeModal" 
@@ -22,9 +22,8 @@
           <p class="text-gray-700 text-lg mb-4">
             <strong>Route:</strong> {{ routeData.route }}
           </p>
-          <pre class="bg-gray-100 p-4 rounded-lg text-sm overflow-auto max-h-60 border border-gray-300">
-            {{ routeData.mockData }}
-          </pre>
+
+          <textarea id="editorPreview"></textarea>
         </div>
         <div v-else class="text-center text-gray-500 text-lg">
           Loading...
@@ -35,9 +34,12 @@
 </template>
 
 <script setup>
-import { ref, watchEffect, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watchEffect, onBeforeUnmount, nextTick } from 'vue';
 import { X } from 'lucide-vue-next';
 import { fetchRouteDataService } from '@/services/routes';
+import CodeMirror from 'codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/dracula.css';
 
 const props = defineProps({
   route: String,
@@ -49,7 +51,6 @@ const emit = defineEmits(['close']);
 const routeData = ref(null);
 
 const fetchRouteData = async (route) => {
-  console.log(route)
   if (!route) return;
 
   const cleanRoute = route.replace(/^\/?api\/?/, '');
@@ -58,7 +59,22 @@ const fetchRouteData = async (route) => {
     const response = await fetchRouteDataService(cleanRoute);
     if (response.ok) {
       const data = await response.json();
+
       routeData.value = data
+
+      await nextTick();
+
+      const editor = CodeMirror.fromTextArea(document.getElementById('editorPreview'), {
+        lineNumbers: true,
+        autoCloseBrackets: true,
+        indentUnit: 2,
+        tabSize: 2,
+        readOnly: true,
+        theme: 'dracula',
+        mode: 'application/json',
+      });
+
+      editor.setValue(JSON.stringify(data.mockData, null, 2));
     } else {
       console.error(`Failed to fetch data for route: ${route}`);
     }
@@ -83,4 +99,5 @@ const closeModal = () => {
 onBeforeUnmount(() => {
   document.body.style.overflow = '';
 });
+
 </script>
