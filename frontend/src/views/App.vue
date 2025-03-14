@@ -70,8 +70,10 @@
             v-model="config.apiRoute" 
             placeholder="mock"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            v-on:input="validateInput"
           />
         </div>
+        <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
       </div>
       
       <!-- Mock Data Configuration -->
@@ -96,7 +98,7 @@
           <p class="text-sm text-gray-600">
             Your mock API will be available at: 
             <span class="font-mono bg-gray-100 px-1 py-0.5 rounded">
-              http://localhost:3000/api/{{ config.apiRoute }}
+              http://localhost:3000/api/{{ sanitizedApiRoute }}
             </span>
           </p>
         </div>
@@ -147,12 +149,13 @@
       :isOpen="isModalOpen"
       :route="selectedRoute"
       @close="closeMockConfigModal"
+      @delete-route="deleteRoute"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { InfoIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-vue-next';
 import MockConfigModal from '../components/MockConfigModa.vue';
 import { deleteRouteService, fetchRoutesService, saveConfigService } from '@/services/routes';
@@ -178,6 +181,7 @@ const routes = ref([]);
 const isLoading = ref(false);
 const isModalOpen = ref(false);
 const selectedRoute = ref('');
+const errorMessage = ref('');
 
 const openMockConfigModal = (route) => {
   selectedRoute.value = route;
@@ -276,4 +280,26 @@ onMounted(() => {
 onMounted(async () => {
   await fetchRoutes();
 });
+
+const validateInput = (event) => {
+  const input = event.target.value;
+  if (/[^a-zA-Z0-9]/.test(input)) {
+    errorMessage.value = 'Only letters and numbers are allowed.';
+  } else {
+    errorMessage.value = '';
+  }
+  config.apiRoute = input.replace(/[^a-zA-Z0-9]/g, '');
+};
+
+const sanitizedApiRoute = computed(() => {
+  return config.apiRoute.replace(/[^a-zA-Z0-9]/g, '');
+});
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+</style>

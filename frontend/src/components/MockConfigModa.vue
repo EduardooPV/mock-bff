@@ -1,27 +1,30 @@
 <template>
   <Teleport to="body">
-    <div 
-      v-if="isOpen" 
-      class="fixed inset-0 bg-[#00000080] flex items-center justify-center" 
-      @click.self="closeModal"
-    >
+    <div v-if="isOpen" class="fixed inset-0 bg-[#00000080] flex items-center justify-center" @click.self="closeModal">
       <div class="bg-white p-8 pt-6 rounded-2xl shadow-2xl max-w-2/3 w-full">
         <div class="flex justify-end items-center">
-          <button 
-            @click="closeModal" 
-            class="text-gray-500 hover:text-gray-700 text-2xl font-bold p-2 w-10 h-10 flex items-center justify-center rounded-full transition duration-200 cursor-pointer hover:bg-gray-200"
-          >
-           <X />
+          <button @click="closeModal"
+            class="text-gray-500 hover:text-gray-700 text-2xl font-bold p-2 w-10 h-10 flex items-center justify-center rounded-full transition duration-200 cursor-pointer hover:bg-gray-200">
+            <X />
           </button>
         </div>
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-semibold text-gray-800">Mock API Route</h2>
         </div>
-        
+
         <div v-if="routeData">
-          <p class="text-gray-700 text-lg mb-4">
-            <strong>Route:</strong> {{ routeData.route }}
-          </p>
+          <div class="flex justify-between items-center w-full mb-4">
+
+            <p class="text-gray-700 text-lg ">
+              <strong>Route:</strong> {{ routeData.route }}
+            </p>
+
+            <button @click="deleteRoute(route)"
+              class="flex items-center justify-center p-2 rounded-full transition cursor-pointer hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Delete route">
+              <Trash2Icon color="#FF6961" size="15" />
+            </button>
+          </div>
 
           <textarea id="editorPreview"></textarea>
         </div>
@@ -35,7 +38,7 @@
 
 <script setup>
 import { ref, watchEffect, onBeforeUnmount, nextTick } from 'vue';
-import { X } from 'lucide-vue-next';
+import { Trash2Icon, X } from 'lucide-vue-next';
 import { fetchRouteDataService } from '@/services/routes';
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
@@ -46,7 +49,7 @@ const props = defineProps({
   isOpen: Boolean,
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'deleteRoute']);
 
 const routeData = ref(null);
 
@@ -91,6 +94,11 @@ watchEffect(() => {
     document.body.style.overflow = '';
   }
 });
+
+const deleteRoute = (route) => {
+  emit('deleteRoute', route)
+  emit('close');
+}
 
 const closeModal = () => {
   emit('close');
