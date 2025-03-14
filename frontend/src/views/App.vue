@@ -262,16 +262,14 @@ watch(saveSuccess, (newValue) => {
 onMounted(() => {
   const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,
+    autoCloseBrackets: true,
     indentUnit: 2,
     tabSize: 2,
     theme: 'dracula',
     mode: 'application/json',
     autocorrect: true,
     spellcheck: true,
-    fontSize: 20,
   });
-
-  editor.getWrapperElement().style["font-size"] = "16px";
 
   editor.on('change', (instance) => {
     mockDataText.value = instance.getValue();
