@@ -1,6 +1,6 @@
 {
   "simulateError": false,
-  "responseDelay": 5,
+  "responseDelay": 1,
   "apiRoutes": [
     {
       "path": "mock",

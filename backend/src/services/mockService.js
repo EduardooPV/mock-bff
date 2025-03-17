@@ -11,7 +11,6 @@ export class MockService {
     const currentConfig = await this.repository.readConfig();
     const { simulateError, responseDelay, apiRoute, mockData } = configData;
 
-    // Atualizar ou adicionar a nova rota em apiRoutes
     const existingRouteIndex = currentConfig.apiRoutes.findIndex(
       (route) => route.path === apiRoute
     );
@@ -35,7 +34,7 @@ export class MockService {
 
   async getRoutes() {
     const config = await this.repository.readConfig();
-    return config.apiRoutes.map((route) => `/api/${route.path}`);
+    return config.apiRoutes.map((route) => `/${route.path}`);
   }
 
   async getRouteConfig(route) {
@@ -69,13 +68,21 @@ export class MockService {
       };
     }
 
-    const routeConfig = config.apiRoutes.find((r) => r.path === route);
+    const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
+
+    const routeConfig = config.apiRoutes.find(
+      (r) => r.path === normalizedRoute
+    );
+
+    console.log(route);
+    console.log(routeConfig);
+    console.log(config);
     if (!routeConfig) {
       throw {
         status: 404,
         error: {
           code: "NOT_FOUND",
-          message: `Route /api/${route} not configured.`,
+          message: `Route ${route} not configured.`,
         },
       };
     }

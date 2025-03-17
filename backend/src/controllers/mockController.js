@@ -49,21 +49,23 @@ export class MockController {
 
   async getRouteConfig(req, res) {
     try {
-      const routeConfig = await this.service.getRouteConfig(req.params.route);
+      let routePath = req.params[0];
+
+      const routeConfig = await this.service.getRouteConfig(routePath);
 
       if (!routeConfig) {
         return res.status(404).json({
           success: false,
           error: {
             code: "NOT_FOUND",
-            message: `Route /api/${req.params.route} not found.`,
+            message: `Route /${routePath} not found.`,
           },
         });
       }
 
       res.json({
         success: true,
-        route: `/api/${routeConfig.path}`,
+        route: `/${routeConfig.path}`,
         mockData: routeConfig.mockData,
       });
     } catch (error) {
@@ -76,13 +78,15 @@ export class MockController {
 
   async deleteRoute(req, res) {
     try {
-      const success = await this.service.deleteRoute(req.params.route);
+      let routePath = req.params[0];
+
+      const success = await this.service.deleteRoute(routePath);
 
       if (!success) {
         return res.status(404).send("Route not found");
       }
 
-      res.status(200).send(`Route ${req.params.route} deleted successfully`);
+      res.status(200).send(`Route ${routePath} deleted successfully`);
     } catch (error) {
       res.status(500).send("Failed to delete route");
     }
@@ -90,7 +94,8 @@ export class MockController {
 
   async handleMockRequest(req, res) {
     try {
-      const mockData = await this.service.getMockResponse(req.params.route);
+      const routePath = req.params[0];
+      const mockData = await this.service.getMockResponse(routePath);
       res.json(mockData);
     } catch (error) {
       const status = error.status || 500;
@@ -104,6 +109,4 @@ export class MockController {
       });
     }
   }
-
-  // ... outros métodos do controller
 }

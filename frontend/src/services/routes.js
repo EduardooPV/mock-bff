@@ -1,5 +1,5 @@
 export const saveConfigService = async (config, text) => {
-  const response = await fetch("http://localhost:3000/api/config", {
+  const response = await fetch("http://localhost:3000/config", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -18,7 +18,7 @@ export const fetchRoutesService = async () => {
 };
 
 export const deleteRouteService = async (route) => {
-  const response = await fetch(`http://localhost:3000/api/routes/${route}`, {
+  const response = await fetch(`http://localhost:3000/routes/${route}`, {
     method: "DELETE",
   });
 
@@ -26,7 +26,7 @@ export const deleteRouteService = async (route) => {
 };
 
 export const fetchRouteDataService = async (route) => {
-  const response = await fetch(`http://localhost:3000/api/routes/${route}`);
+  const response = await fetch(`http://localhost:3000/routes${route}`);
 
   return response;
 };

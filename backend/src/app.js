@@ -16,7 +16,6 @@ const mockRepository = new MockRepository();
 const mockService = new MockService(mockRepository);
 const mockController = new MockController(mockService);
 
-// Rota para listar todas as rotas disponíveis
 app.get("/routes", async (req, res) => {
   try {
     const routes = await mockService.getRoutes();
@@ -29,7 +28,6 @@ app.get("/routes", async (req, res) => {
   }
 });
 
-// Rotas da API mock com prefixo /api
-app.use("/api", createMockRouter(mockController, mockService));
+app.use("/", createMockRouter(mockController, mockService));
 
 export default app;

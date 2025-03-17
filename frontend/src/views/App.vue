@@ -36,7 +36,7 @@
             <div class="relative inline-block" @mouseenter="showDelayTooltip = true" @mouseleave="showDelayTooltip = false">
               <InfoIcon class="h-4 w-4 text-gray-400" />
               <div v-if="showDelayTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
-                Simulates loading time before the response is returned (default: 0 seconds)
+                Simulates loading time before the response is returned (default: 1 seconds)
               </div>
             </div>
           </div>
@@ -58,19 +58,18 @@
           <div class="relative inline-block" @mouseenter="showRouteTooltip = true" @mouseleave="showRouteTooltip = false">
             <InfoIcon class="h-4 w-4 text-gray-400" />
             <div v-if="showRouteTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
-              The endpoint path that will be used (e.g., trading/v1/products)
+              The endpoint path that will be used (e.g., investments/v2/home/portfolios)
             </div>
           </div>
         </div>
         <div class="flex items-center">
-          <span class="text-gray-500 mr-1">/api/</span>
           <input 
             id="apiRoute" 
             type="text" 
             v-model="config.apiRoute" 
             placeholder="mock"
             class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            v-on:input="validateInput"
+        
           />
         </div>
         <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
@@ -98,7 +97,7 @@
           <p class="text-sm text-gray-600">
             Your mock API will be available at: 
             <span class="font-mono bg-gray-100 px-1 py-0.5 rounded">
-              http://localhost:3000/api/{{ sanitizedApiRoute }}
+              http://localhost:3000/{{ config.apiRoute }}
             </span>
           </p>
         </div>
@@ -118,12 +117,12 @@
     </div>
 
     <!-- API Routes Section -->
-    <div class="min-h-screen bg-gray-100 " v-if="routes.length > 0">
+    <div class="bg-gray-100 " v-if="routes.length > 0">
       <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock API Routes</h1>
         
         <div v-if="routes.length > 0" class="space-y-4">
-          <h2 class="text-xl font-semibold text-gray-800">Available API Routes</h2>
+          
           <ul>
             <li v-for="route in routes" :key="route" class="flex justify-between items-center gap-2 text-gray-600">
               <button class="font-mono text-blue-500 hover:bg-gray-200 p-2 rounded-sm cursor-pointer w-full text-start" @click="openMockConfigModal(route)">{{ route }}</button>
@@ -139,9 +138,9 @@
           </ul>
         </div>
 
-        <div v-else>
-          <p class="text-sm text-gray-600">Loading routes...</p>
-        </div>
+         <span v-else class="flex items-center justify-center animate-spin h-5 w-5">
+            <LoaderCircleIcon />
+          </span>
       </div>
     </div>
 
@@ -170,7 +169,7 @@ const showDataTooltip = ref(false);
 
 const config = reactive({
   simulateError: false,
-  responseDelay: 5,
+  responseDelay: 1,
   apiRoute: 'mock',
 });
 
@@ -234,7 +233,7 @@ const fetchRoutes = async () => {
 };
 
 const deleteRoute = async (route) => {
-  const routeToDelete = route.replace('/api', '').replace(/^\/+|\/+$/g, ''); 
+  const routeToDelete = route.replace(/^\/+|\/+$/g, ''); 
 
   try {
     const response = await deleteRouteService(routeToDelete)
@@ -275,24 +274,11 @@ onMounted(() => {
     mockDataText.value = instance.getValue();
     validateJson();
   });
+  editor.setSize("100%", "400")
 })
 
 onMounted(async () => {
   await fetchRoutes();
-});
-
-const validateInput = (event) => {
-  const input = event.target.value;
-  if (/[^a-zA-Z0-9]/.test(input)) {
-    errorMessage.value = 'Only letters and numbers are allowed.';
-  } else {
-    errorMessage.value = '';
-  }
-  config.apiRoute = input.replace(/[^a-zA-Z0-9]/g, '');
-};
-
-const sanitizedApiRoute = computed(() => {
-  return config.apiRoute.replace(/[^a-zA-Z0-9]/g, '');
 });
 </script>
 
