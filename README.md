@@ -19,7 +19,7 @@ O projeto é composto por duas partes principais:
 
 ### Web
 
-https://github.com/user-attachments/assets/37047987-1cef-4f87-ba17-1b826f78d5a2
+https://github.com/user-attachments/assets/1fa924e8-0d19-4476-946e-008652adef81
 
 ### Simulando request com sucesso
 
