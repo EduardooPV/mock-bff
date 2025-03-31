@@ -70,13 +70,12 @@ export class MockService {
 
     const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
 
+    const routePath = normalizedRoute.split("?")[0];
+
     const routeConfig = config.apiRoutes.find(
-      (r) => r.path === normalizedRoute
+      (r) => r.path.split("?")[0] === routePath
     );
 
-    console.log(route);
-    console.log(routeConfig);
-    console.log(config);
     if (!routeConfig) {
       throw {
         status: 404,
