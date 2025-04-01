@@ -91,8 +91,8 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex justify-between items-center">
-        <div>
+      <div class="flex justify-between items-center flex-col gap-4">
+        <div class="self-start">
           <p v-if="saveSuccess" class="text-sm text-green-600 mb-2">Configuration saved successfully!</p>
           <p class="text-sm text-gray-600">
             Your mock API will be available at: 
@@ -103,7 +103,7 @@
         </div>
         <button 
           @click="saveConfig" 
-          class="px-4 py-2 bg-blue-600 flex items-center justify-center text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer w-[180px] h-[40px]"
+          class="min-w-[180px] px-4 py-2 bg-blue-600 flex items-center justify-center text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer w-[180px] h-[40px] self-end"
           :disabled="isLoading || !!jsonError"
         >
           <span v-if="isLoading" class="flex items-center justify-center animate-spin h-5 w-5">

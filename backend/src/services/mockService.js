@@ -39,12 +39,24 @@ export class MockService {
 
   async getRouteConfig(route) {
     const config = await this.repository.readConfig();
-    return config.apiRoutes.find((r) => r.path === route);
+
+    const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
+
+    const routePath = normalizedRoute.split("?")[0];
+
+    return config.apiRoutes.find((r) => r.path.split("?")[0] === routePath);
   }
 
   async deleteRoute(route) {
     const config = await this.repository.readConfig();
-    const routeIndex = config.apiRoutes.findIndex((r) => r.path === route);
+
+    const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
+
+    const routePath = normalizedRoute.split("?")[0];
+
+    const routeIndex = config.apiRoutes.findIndex(
+      (r) => r.path.split("?")[0] === routePath
+    );
 
     if (routeIndex === -1) {
       return false;
