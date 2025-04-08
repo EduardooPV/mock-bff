@@ -1,19 +1,5 @@
 {
   "simulateError": false,
   "responseDelay": 5,
-  "apiRoutes": [
-    {
-      "path": "mock123",
-      "mockData": {
-        "title": "Lorem"
-      }
-    },
-    {
-      "path": "mock",
-      "name": "Api name 123",
-      "simulateError": false,
-      "responseDelay": 1,
-      "mockData": {}
-    }
-  ]
+  "apiRoutes": []
 }
