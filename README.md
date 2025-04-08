@@ -14,20 +14,22 @@ O projeto é composto por duas partes principais:
 - Definição de rotas da API.
 - Edição e validação de dados mockados no formato JSON.
 - Visualização das rotas disponíveis e exclusão de rotas.
+- Duplicação de rotas existentes com o sufixo `Duplicate` no nome e no caminho.
+- Validação de campos como nome, rota e JSON mockado.
 
 ## Preview
 
 ### Web
 
-https://github.com/user-attachments/assets/1fa924e8-0d19-4476-946e-008652adef81
+// Video
 
 ### Simulando request com sucesso
 
-![Captura de tela 2025-03-12 210631](https://github.com/user-attachments/assets/5468b9b8-2099-441a-b9b5-517a79e8f94e)
+![image](https://github.com/user-attachments/assets/17c1b13a-d20f-408c-bde3-09562e7724ad)
 
 ### Simulando request com erro
 
-![Captura de tela 2025-03-12 210647](https://github.com/user-attachments/assets/da7c433c-22fa-468e-a9ba-610e2ad8b707)
+![image](https://github.com/user-attachments/assets/023d42de-efc5-47bc-87b3-a3724c140191)
 
 ## Estrutura do Projeto
 
