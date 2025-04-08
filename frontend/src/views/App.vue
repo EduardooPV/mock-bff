@@ -195,11 +195,11 @@ const showNameTooltip = ref(false);
 const config = reactive({
   simulateError: false,
   responseDelay: 1,
-  apiRoute: '',
-  name: ''
+  apiRoute: 'mock',
+  name: 'Route name'
 });
 
-const mockDataText = ref('');
+const mockDataText = ref(`{\n   "title": "Lorem" \n}`);
 const jsonError = ref('');
 const saveSuccess = ref(false);
 const routes = ref([]);
