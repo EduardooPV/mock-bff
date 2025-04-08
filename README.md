@@ -14,8 +14,6 @@ O projeto é composto por duas partes principais:
 - Definição de rotas da API.
 - Edição e validação de dados mockados no formato JSON.
 - Visualização das rotas disponíveis e exclusão de rotas.
-- Duplicação de rotas existentes com o sufixo `Duplicate` no nome e no caminho.
-- Validação de campos como nome, rota e JSON mockado.
 
 ## Preview
 
