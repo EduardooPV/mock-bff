@@ -4,6 +4,7 @@ export const saveConfigService = async (config, text) => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...config,
+      name: config.name, // Inclui o campo name
       mockData: JSON.parse(text),
     }),
   });
@@ -26,7 +27,10 @@ export const deleteRouteService = async (route) => {
 };
 
 export const fetchRouteDataService = async (route) => {
-  const response = await fetch(`http://localhost:3000/routes${route}`);
+  const response = await fetch(`http://localhost:3000/config/${route}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
 
   return response;
 };

@@ -5,13 +5,13 @@ export class MockController {
 
   async updateConfig(req, res) {
     try {
-      const { simulateError, responseDelay, apiRoute, mockData } = req.body;
+      const { simulateError, responseDelay, apiRoute, mockData, name } =
+        req.body;
 
-      // Validação dos dados recebidos
-      if (apiRoute === undefined || mockData === undefined) {
+      if (!apiRoute || !mockData || name === undefined) {
         return res.status(400).json({
           success: false,
-          error: "apiRoute and mockData are required",
+          error: "apiRoute, mockData, and name are required",
         });
       }
 
@@ -20,6 +20,7 @@ export class MockController {
         responseDelay: Number(responseDelay),
         apiRoute,
         mockData,
+        name,
       });
 
       res.json({

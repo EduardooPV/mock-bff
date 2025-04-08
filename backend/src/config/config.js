@@ -6,7 +6,7 @@ const __dirname = path.dirname(__filename);
 
 export const CONFIG = {
   PORT: process.env.PORT || 3000,
-  CONFIG_PATH: path.resolve(__dirname, "../../../mock-config.json"),
+  CONFIG_PATH: path.resolve(__dirname, "../../mock-config.json"),
   DEFAULT_CONFIG: {
     simulateError: false,
     responseDelay: 5,

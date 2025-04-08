@@ -3,16 +3,17 @@
   "responseDelay": 5,
   "apiRoutes": [
     {
-      "path": "mock",
-      "mockData": {
-        "title": "Lore12312321m"
-      }
-    },
-    {
       "path": "mock123",
       "mockData": {
         "title": "Lorem"
       }
+    },
+    {
+      "path": "mock",
+      "name": "Api name 123",
+      "simulateError": false,
+      "responseDelay": 1,
+      "mockData": {}
     }
   ]
 }

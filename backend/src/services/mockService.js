@@ -9,26 +9,32 @@ export class MockService {
 
   async updateConfig(configData) {
     const currentConfig = await this.repository.readConfig();
-    const { simulateError, responseDelay, apiRoute, mockData } = configData;
+    const { simulateError, responseDelay, apiRoute, mockData, name } =
+      configData;
 
     const existingRouteIndex = currentConfig.apiRoutes.findIndex(
       (route) => route.path === apiRoute
     );
 
     if (existingRouteIndex !== -1) {
-      currentConfig.apiRoutes[existingRouteIndex].mockData = mockData;
+      currentConfig.apiRoutes[existingRouteIndex] = {
+        ...currentConfig.apiRoutes[existingRouteIndex],
+        simulateError,
+        responseDelay,
+        mockData,
+        name,
+      };
     } else {
-      currentConfig.apiRoutes.push({ path: apiRoute, mockData });
+      currentConfig.apiRoutes.push({
+        path: apiRoute,
+        name,
+        simulateError,
+        responseDelay,
+        mockData,
+      });
     }
 
-    const updatedConfig = {
-      ...currentConfig,
-      simulateError: Boolean(simulateError),
-      responseDelay: Number(responseDelay) || currentConfig.responseDelay,
-      apiRoutes: currentConfig.apiRoutes,
-    };
-
-    await this.repository.saveConfig(updatedConfig);
+    await this.repository.saveConfig(currentConfig);
     return true;
   }
 
@@ -39,23 +45,15 @@ export class MockService {
 
   async getRouteConfig(route) {
     const config = await this.repository.readConfig();
-
     const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
-
-    const routePath = normalizedRoute.split("?")[0];
-
-    return config.apiRoutes.find((r) => r.path.split("?")[0] === routePath);
+    return config.apiRoutes.find((r) => r.path === normalizedRoute);
   }
 
   async deleteRoute(route) {
     const config = await this.repository.readConfig();
-
     const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
-
-    const routePath = normalizedRoute.split("?")[0];
-
     const routeIndex = config.apiRoutes.findIndex(
-      (r) => r.path.split("?")[0] === routePath
+      (r) => r.path === normalizedRoute
     );
 
     if (routeIndex === -1) {
@@ -69,23 +67,9 @@ export class MockService {
 
   async getMockResponse(route) {
     const config = await this.repository.readConfig();
-
-    if (config.simulateError) {
-      throw {
-        status: 500,
-        error: {
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Simulated server error",
-        },
-      };
-    }
-
     const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
-
-    const routePath = normalizedRoute.split("?")[0];
-
     const routeConfig = config.apiRoutes.find(
-      (r) => r.path.split("?")[0] === routePath
+      (r) => r.path === normalizedRoute
     );
 
     if (!routeConfig) {
@@ -98,6 +82,25 @@ export class MockService {
       };
     }
 
+    if (routeConfig.simulateError) {
+      throw {
+        status: 500,
+        error: {
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Simulated server error",
+        },
+      };
+    }
+
     return routeConfig.mockData;
+  }
+
+  async getRouteDelay(route) {
+    const config = await this.repository.readConfig();
+    const normalizedRoute = route.startsWith("/") ? route.slice(1) : route;
+    const routeConfig = config.apiRoutes.find(
+      (r) => r.path === normalizedRoute
+    );
+    return routeConfig ? routeConfig.responseDelay : 0;
   }
 }

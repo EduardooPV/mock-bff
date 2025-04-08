@@ -4,34 +4,31 @@
       <h1 class="text-2xl font-bold text-gray-800 mb-6">Mock BFF Configuration</h1>
       
       <!-- Configuration Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Error Simulation -->
-        <div class="space-y-2">
-          <div class="flex items-center">
-            <label for="simulateError" class="font-medium text-gray-700 mr-2">Simulate Error</label>
-            <div class="relative inline-block" @mouseenter="showErrorTooltip = true" @mouseleave="showErrorTooltip = false">
+      
+      
+      <div class="flex gap-4 mb-6 ">
+      <!-- Nome da Rota -->
+        <div class="flex-1/4">
+          <div class="flex items-center mb-2">
+            <label for="routeName" class="font-medium text-gray-700 mr-2">Route Name</label>
+            <div class="relative inline-block" @mouseenter="showNameTooltip = true" @mouseleave="showNameTooltip = false">
               <InfoIcon class="h-4 w-4 text-gray-400" />
-              <div v-if="showErrorTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
-                When enabled, the API will return a 500 error instead of the mock data
+              <div v-if="showNameTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+                A descriptive name for the route (e.g., "Get Portfolio Data").
               </div>
             </div>
           </div>
-          <div class="flex items-center">
-            <input 
-              id="simulateError" 
-              type="checkbox" 
-              v-model="config.simulateError"
-              class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
-            />
-            <label for="simulateError" class="ml-2 text-sm text-gray-600 cursor-pointer">
-              {{ config.simulateError ? 'Error will be returned' : 'Normal response will be returned' }}
-            </label>
-          </div>
+          <input 
+            id="routeName" 
+            type="text" 
+            v-model="config.name" 
+            placeholder="Enter route name"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
 
-        <!-- Response Delay -->
-        <div class="space-y-2">
-          <div class="flex items-center">
+        <div class="flex-1">
+          <div class="flex items-center  mb-2">
             <label for="responseDelay" class="font-medium text-gray-700 mr-2">Response Delay (seconds)</label>
             <div class="relative inline-block" @mouseenter="showDelayTooltip = true" @mouseleave="showDelayTooltip = false">
               <InfoIcon class="h-4 w-4 text-gray-400" />
@@ -49,31 +46,58 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-      </div>
-      
-      <!-- API Route Configuration -->
-      <div class="mb-6">
-        <div class="flex items-center mb-2">
-          <label for="apiRoute" class="font-medium text-gray-700 mr-2">API Route</label>
-          <div class="relative inline-block" @mouseenter="showRouteTooltip = true" @mouseleave="showRouteTooltip = false">
-            <InfoIcon class="h-4 w-4 text-gray-400" />
-            <div v-if="showRouteTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
-              The endpoint path that will be used (e.g., investments/v2/home/portfolios)
+
+          <div class="w-[150px] flex flex-col">
+          <div class="flex items-center">
+            <label for="simulateError" class="font-medium text-gray-700 mr-2">Simulate Error</label>
+            <div class="relative inline-block" @mouseenter="showErrorTooltip = true" @mouseleave="showErrorTooltip = false">
+              <InfoIcon class="h-4 w-4 text-gray-400" />
+              <div v-if="showErrorTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+                When enabled, the API will return a 500 error instead of the mock data
+              </div>
             </div>
           </div>
+          <div class="flex items-center flex-1">
+            <input 
+              id="simulateError" 
+              type="checkbox" 
+              v-model="config.simulateError"
+              class="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+            />
+            <label for="simulateError" class="ml-2 text-sm text-gray-600 cursor-pointer">
+              {{ config.simulateError ? 'Error response' : 'Normal response' }}
+            </label>
+          </div>
         </div>
-        <div class="flex items-center">
-          <input 
-            id="apiRoute" 
-            type="text" 
-            v-model="config.apiRoute" 
-            placeholder="mock"
-            class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        <!-- API Route Configuration -->
         
-          />
-        </div>
-        <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
       </div>
+
+      
+
+      <div class="mb-6 flex-1">
+          <div class="flex items-center mb-2">
+            <label for="apiRoute" class="font-medium text-gray-700 mr-2">API Route</label>
+            <div class="relative inline-block" @mouseenter="showRouteTooltip = true" @mouseleave="showRouteTooltip = false">
+              <InfoIcon class="h-4 w-4 text-gray-400" />
+              <div v-if="showRouteTooltip" class="absolute z-10 w-64 p-2 bg-black text-white text-xs rounded shadow-lg -mt-2 ml-2">
+                The endpoint path that will be used (e.g., investments/v2/home/portfolios)
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <input 
+              id="apiRoute" 
+              type="text" 
+              v-model="config.apiRoute" 
+              placeholder="Mock path"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          
+            />
+          </div>
+          <p v-if="errorMessage" class="text-red-500 text-sm mt-2">{{ errorMessage }}</p>
+        </div>
+        
       
       <!-- Mock Data Configuration -->
       <div class="mb-6">
@@ -148,7 +172,7 @@
       :isOpen="isModalOpen"
       :route="selectedRoute"
       @close="closeMockConfigModal"
-      @delete-route="deleteRoute"
+      @update-routes="fetchRoutes"
     />
   </div>
 </template>
@@ -166,14 +190,16 @@ const showErrorTooltip = ref(false);
 const showDelayTooltip = ref(false);
 const showRouteTooltip = ref(false);
 const showDataTooltip = ref(false);
+const showNameTooltip = ref(false);
 
 const config = reactive({
   simulateError: false,
   responseDelay: 1,
-  apiRoute: 'mock',
+  apiRoute: '',
+  name: ''
 });
 
-const mockDataText = ref('{\n  "title": "Lorem"\n}');
+const mockDataText = ref('');
 const jsonError = ref('');
 const saveSuccess = ref(false);
 const routes = ref([]);

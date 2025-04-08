@@ -10,6 +10,18 @@ export const createMockRouter = (controller, mockService) => {
   router.get("/routes/*", controller.getRouteConfig.bind(controller));
   router.delete("/routes/*", controller.deleteRoute.bind(controller));
 
+  router.get("/config/:route", async (req, res) => {
+    const { route } = req.params;
+    const config = await mockService.getConfig();
+    const routeData = config.apiRoutes.find((r) => r.path === route);
+
+    if (!routeData) {
+      return res.status(404).json({ error: "Route not found" });
+    }
+
+    res.json(routeData);
+  });
+
   router.get(
     "*",
     delayMiddleware,
