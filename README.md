@@ -19,7 +19,12 @@ O projeto é composto por duas partes principais:
 
 ### Web
 
-// Video
+### Página inicial
+![image](https://github.com/user-attachments/assets/dc8d2bb9-77f4-4d0b-97d8-c26bcd2eb5ab)
+
+### Popup detalhes da rota
+![image](https://github.com/user-attachments/assets/f7a6dbbb-10de-4dbd-be61-def496c73fb8)
+
 
 ### Simulando request com sucesso
 
