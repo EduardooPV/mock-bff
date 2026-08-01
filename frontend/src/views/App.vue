@@ -149,7 +149,7 @@
           
           <ul>
             <li v-for="route in routes" :key="route" class="flex justify-between items-center gap-2 text-gray-600">
-              <button class="font-mono text-blue-500 hover:bg-gray-200 p-2 rounded-sm cursor-pointer w-full text-start" @click="openMockConfigModal(route)">{{ route }}</button>
+              <button class="font-mono text-blue-500 hover:bg-gray-200 p-2 rounded-sm cursor-pointer w-full text-start" @click="openMockConfigModall(route)">{{ route }}</button>
             
               <button 
                 @click="deleteRoute(route)"
@@ -168,10 +168,10 @@
       </div>
     </div>
 
-    <MockConfigModal 
+    <MockConfigModall 
       :isOpen="isModalOpen"
       :route="selectedRoute"
-      @close="closeMockConfigModal"
+      @close="closeMockConfigModall"
       @update-routes="fetchRoutes"
     />
   </div>
@@ -180,7 +180,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue';
 import { InfoIcon, Trash2Icon, LoaderCircleIcon } from 'lucide-vue-next';
-import MockConfigModal from '../components/MockConfigModa.vue';
+import MockConfigModall from '../components/MockConfigModal.vue';
 import { deleteRouteService, fetchRoutesService, saveConfigService } from '@/services/routes';
 import * as CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
@@ -208,12 +208,12 @@ const isModalOpen = ref(false);
 const selectedRoute = ref('');
 const errorMessage = ref('');
 
-const openMockConfigModal = (route) => {
+const openMockConfigModall = (route) => {
   selectedRoute.value = route;
   isModalOpen.value = true;
 };
 
-const closeMockConfigModal = () => {
+const closeMockConfigModall = () => {
   isModalOpen.value = false;
 };
 
